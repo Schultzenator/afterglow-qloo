@@ -45,3 +45,12 @@ This environment has stale npm-cache/TMPDIR defaults. Installation used `--cache
 - `wrangler deploy --dry-run` passed: Worker bundle 24.37 KiB, static-assets binding recognized. No live Worker was deployed, and no credentials were uploaded.
 - Final source Docker image `afterglow-qloo:mvp-3159aa1` built successfully. Container ran as `node`; `/` and `/api/health` returned 200, and `/api/plan` returned a five-step fixture/rules plan with Bibenda in Warsaw. Test container was stopped after verification. No image registry push is claimed.
 - Application sources and documentation are pushed to `main`. Documentation-only commits intentionally do not rebuild the unchanged Pages application.
+
+### Follow-up verification — 2026-10-23
+
+- Reused the completed project and public deployment; no duplicate app or repository created.
+- Re-ran all 11 logic/provider/API tests and the TypeScript/production build successfully.
+- Re-ran both Chromium tests against `https://schultzenator.github.io/afterglow-qloo/`: both passed (13.5 seconds), covering the judging flow and mobile/error recovery.
+- Confirmed the GitHub repository remains public using the GitHub API.
+- The first test invocation hit the already documented invalid environment temporary-directory setting; rerunning with `TMPDIR=/tmp` passed. No source change was needed.
+- Rechecked the organizer's overview and rules: the public-hosting and Qloo-integration requirements remain relevant. The fixture demo is ready for review; credentialed Qloo verification is still pending PW's API access.
