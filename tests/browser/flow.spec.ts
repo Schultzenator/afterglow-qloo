@@ -1,0 +1,42 @@
+import { test, expect } from '@playwright/test';
+// Keep UI regression tests deterministic even if a developer has a paid model backend running.
+test.beforeEach(async ({ page }) => { await page.route('**/api/health', route => route.abort()); });
+test('judging flow: brief, discover, inspect, swap, save, and city change', async ({ page }) => {
+  const errors: string[] = []; page.on('pageerror', e => errors.push(e.message));
+  await page.goto('./');
+  await expect(page.getByRole('heading', { name: /Go where your/ })).toBeVisible();
+  await page.getByRole('button', { name: 'Find my evening' }).click();
+  await expect(page.locator('.pick-card')).toHaveCount(3);
+  await expect(page.getByText('Your $100 envelope')).toBeVisible();
+  await page.getByText("Follow the agent's trail").click();
+  await expect(page.locator('.trace-event')).toHaveCount(5);
+  const before = await page.locator('.movie h3').textContent();
+  const kept = await page.locator('.place h3').textContent();
+  await page.getByRole('button', { name: 'Swap movie', exact: true }).click();
+  await expect(page.locator('.movie h3')).not.toHaveText(before!);
+  await expect(page.locator('.place h3')).toHaveText(kept!);
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Save evening' }).click();
+  expect((await download).suggestedFilename()).toBe('my-afterglow-evening.md');
+  await page.locator('#city').selectOption('Warsaw');
+  await page.getByRole('button', { name: 'Find my evening' }).click();
+  await expect(page.locator('.results-heading p')).toContainText('Warsaw');
+  const venueLink = page.locator('.place .pick-actions a');
+  await expect(venueLink).toHaveAttribute('href', /Warsaw/);
+  expect(errors).toEqual([]);
+});
+test('mobile layout, source disclosure, dialog and unknown taste recovery', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('./');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.getByRole('button', { name: 'Curated demo' }).click();
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: 'Close', exact: true }).click();
+  await page.locator('#prompt').fill('I love "A completely unknown band".');
+  await page.getByRole('button', { name: 'Find my evening' }).click();
+  await expect(page.getByRole('alert')).toContainText('Could not resolve');
+  await page.getByRole('button', { name: 'Soul after sunset' }).click();
+  await page.getByRole('button', { name: 'Find my evening' }).click();
+  await expect(page.locator('.pick-card')).toHaveCount(3);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});

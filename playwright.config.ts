@@ -1,0 +1,2 @@
+import { defineConfig } from '@playwright/test';
+export default defineConfig({ testDir: './tests/browser', use: { baseURL: process.env.E2E_URL || 'http://127.0.0.1:4173', launchOptions: { executablePath: process.env.CHROME_PATH || '/usr/bin/google-chrome', args: ['--no-sandbox'] } }, webServer: process.env.E2E_URL ? undefined : { command: 'npm run preview -- --port 4173', port: 4173, reuseExistingServer: true }, reporter: 'list' });
