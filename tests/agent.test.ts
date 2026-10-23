@@ -37,6 +37,8 @@ test('rejects invented IDs and out-of-order tool calls', async () => {
 });
 test('unknown names and empty discovery fail rather than fabricating a result', async () => {
   await assert.rejects(runRules({ ...brief, prompt: 'I love "An unknown title".' }, new MockTasteProvider()), /Could not resolve/);
+  // A longer unknown name containing "her" must not silently resolve to the film Her.
+  assert.equal((await new MockTasteProvider().search('Other unrelated band')).entities.length, 0);
   const empty: TasteProvider = { kind: 'qloo', search: q => new MockTasteProvider().search(q), discover: async () => [] };
   await assert.rejects(runRules(brief, empty), /No artist matches/);
 });

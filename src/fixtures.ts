@@ -48,7 +48,7 @@ export class MockTasteProvider implements TasteProvider {
   async search(query: string) {
     const normalize = (s: string) => s.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^a-z0-9]/g, '');
     const q = normalize(query);
-    return { query, entities: q.length < 2 ? [] : catalog.filter(e => normalize(e.name).includes(q) || q.includes(normalize(e.name))).slice(0, 4) };
+    return { query, entities: q.length < 2 ? [] : catalog.filter(e => normalize(e.name).includes(q)).slice(0, 4) };
   }
   async discover(input: DiscoverInput) {
     const seeds = catalog.filter(e => input.seeds.includes(e.id));
