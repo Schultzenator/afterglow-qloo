@@ -6,6 +6,8 @@
 
 The hosted GitHub Pages demo is **key-free, curated fixtures + a rule-based tool workflow**. It does not call Qloo or an LLM. A Node/Cloudflare backend implements live Qloo and optional Mistral function calling behind the same tools. Qloo live integration still needs an API key and a credentialed smoke test before submission. This distinction is also visible inside the app.
 
+![Afterglow's three-part evening, shown with sample data](docs/afterglow-evening.png)
+
 ## Try it in 60 seconds
 
 1. Open the demo. The default brief mentions Khruangbin, Wes Anderson and Haruki Murakami.

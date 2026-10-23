@@ -10,7 +10,7 @@
 - Shared tool registry and deterministic planner; optional bounded Mistral function-calling loop with candidate-ID validation.
 - Node API/static server, Cloudflare Worker entry point/configuration, non-root Dockerfile, MIT license, README and submission kit.
 - Public repository created: https://github.com/Schultzenator/afterglow-qloo
-- GitHub Pages configured: https://schultzenator.github.io/afterglow-qloo/ (publication validation recorded below).
+- GitHub Pages published: https://schultzenator.github.io/afterglow-qloo/ (publication validation recorded below).
 
 ### Validation evidence
 
@@ -37,4 +37,11 @@ This environment has stale npm-cache/TMPDIR defaults. Installation used `--cache
 
 ### Publication validation
 
-Pending final push, CI and public smoke test. Update this section before ending the session.
+- Public URL returns HTTP 200 and works without credentials or a local server.
+- Latest application commit: `3159aa103beddbe069bdddfca5d7a968cf15df0c`.
+- GitHub Actions build, 11 tests, 2 browser tests and deployment all passed: https://github.com/Schultzenator/afterglow-qloo/actions/runs/39995086014
+- Both browser tests also passed against the actual public URL after that deployment (4.8s). Public mobile planner visually checked at 390px; no horizontal overflow; budget and party controls remain legible.
+- GitHub API confirms repository visibility is public and detected license is MIT.
+- `wrangler deploy --dry-run` passed: Worker bundle 24.37 KiB, static-assets binding recognized. No live Worker was deployed, and no credentials were uploaded.
+- Final source Docker image `afterglow-qloo:mvp-3159aa1` built successfully. Container ran as `node`; `/` and `/api/health` returned 200, and `/api/plan` returned a five-step fixture/rules plan with Bibenda in Warsaw. Test container was stopped after verification. No image registry push is claimed.
+- Application sources and documentation are pushed to `main`. Documentation-only commits intentionally do not rebuild the unchanged Pages application.
