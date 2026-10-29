@@ -76,3 +76,11 @@ This environment has stale npm-cache/TMPDIR defaults. Installation used `--cache
 
 - `npm test`: 11 tests expected to pass.
 - `npm run build`: TypeScript check and Vite production build expected to pass.
+
+## PW completion — 2026-10-29 (afternoon)
+
+1. Pushed the live endpoint commit (8374028) and Actions 'Test and publish demo' run 40858502945 completed success; GitHub Pages healthy (HTTP 200).
+2. Fixed a critical live-flow bug the smoke test missed: /v2/insights returns type 'urn:entity' without a category, so normalizeEntity dropped every entity and each live plan failed with 502 'No artist matches'. Commit b7c82c0 'Accept category-less urn:entity types from live insights responses'; 11/11 tests pass after the fix.
+3. Verified a full live plan locally with the key server-side: plan 200, picks Michael Kiwanuka / One World Trade Center / Her from live Qloo, 'Live Qloo' badge, three 'Qloo result' cards, trace resolve+discover+discover+discover+compose all ok. Screenshots: live-check-1-home.png, live-check-2-results.png, live-check-3-trace.png.
+4. Updated Devpost submission #1268254 (afterglow-kshgyt) description with the 'Live Qloo API update (Oct 29)' section; verified live on the project page.
+The local verification backend was stopped after evidence capture; restart with TMPDIR=/tmp npm run server (reads .env, gitignored). Public deploy decision (credentialed backend) is with the owner.
