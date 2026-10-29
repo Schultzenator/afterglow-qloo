@@ -1,9 +1,9 @@
 import { runRules } from '../src/agent';
 import { MockTasteProvider } from '../src/fixtures';
 import { validateBrief } from '../src/types';
-import { QlooTasteProvider } from './qloo';
+import { QlooRateLimitError, QlooTasteProvider } from './qloo';
 import { runMistral } from './mistral';
-export interface Env { QLOO_API_KEY?: string; QLOO_API_URL?: string; MISTRAL_API_KEY?: string; MISTRAL_MODEL?: string }
+export interface Env { QLOO_API_KEY?: string; QLOO_BASE_URL?: string; QLOO_API_URL?: string; MISTRAL_API_KEY?: string; MISTRAL_MODEL?: string }
 const limits = new Map<string, { start: number; count: number }>();
 export async function handleApi(request: Request, env: Env, client = 'local'): Promise<Response> {
   const headers = { 'content-type': 'application/json', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' };
@@ -35,8 +35,17 @@ export async function handleApi(request: Request, env: Env, client = 'local'): P
   try { brief = validateBrief(JSON.parse(new TextDecoder().decode(bytes))); }
   catch (err) { return json({ error: err instanceof Error ? err.message : 'Invalid brief.' }, 400); }
   try {
-    const provider = env.QLOO_API_KEY ? new QlooTasteProvider(env.QLOO_API_KEY, env.QLOO_API_URL) : new MockTasteProvider();
+    const provider = env.QLOO_API_KEY ? new QlooTasteProvider(env.QLOO_API_KEY, env.QLOO_BASE_URL || env.QLOO_API_URL) : new MockTasteProvider();
     const plan = env.MISTRAL_API_KEY ? await runMistral(brief, provider, env.MISTRAL_API_KEY, env.MISTRAL_MODEL) : await runRules(brief, provider);
     return json(plan);
-  } catch (err) { return json({ error: err instanceof Error ? err.message : 'Could not plan this evening.' }, 502); }
+  } catch (err) {
+    if (err instanceof QlooRateLimitError) {
+      try {
+        const plan = await runRules(brief, new MockTasteProvider());
+        plan.warnings.unshift('Qloo is rate limited right now; these are curated demo fixtures. Please try again shortly for live recommendations.');
+        return json(plan);
+      } catch (fallbackErr) { err = fallbackErr; }
+    }
+    return json({ error: err instanceof Error ? err.message : 'Could not plan this evening.' }, 502);
+  }
 }

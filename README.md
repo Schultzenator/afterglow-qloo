@@ -80,7 +80,7 @@ Patterns adapted from the entrant's PayPal AgentCart: interchangeable mock/live 
 
 `server/qloo.ts` calls `GET /search?query=…&take=5` and `GET /v2/insights` with `filter.type`, `signal.interests.entities`, seed/rejection exclusions and `feature.explainability=true`. Places additionally use city/locality and price-tier filters. Keys are sent only in a server-side `X-Api-Key` header. No secrets use a `VITE_` prefix. See [API contract and activation](docs/API-CONTRACT.md).
 
-**TODO for PW:** obtain the Qloo key through the organizer's form, set it on a backend host, run a real plan, inspect the returned entities and confirm the public app shows **Live Qloo**. Do not submit the fixture demo as verified Qloo output.
+**TODO for PW:** set the supplied Qloo key on the backend host, run a real plan, inspect the returned entities and confirm the public app shows **Live Qloo**. Do not submit the fixture demo as verified Qloo output.
 
 ## Deploy
 
@@ -97,7 +97,7 @@ npx wrangler secret put MISTRAL_API_KEY
 npm run deploy:worker
 ```
 
-Never build the Worker with `VITE_STATIC_DEMO=1`. Use the printed `workers.dev` URL as the live demo link. `QLOO_API_URL` defaults to `https://api.qloo.com`; use an allowed Qloo event origin only if the credential instructions specify it. The API is same-origin; no broad CORS endpoint is provided. Basic in-memory rate limits and bounded bodies are included; a production launch should use a shared edge limiter.
+Never build the Worker with `VITE_STATIC_DEMO=1`. Use the printed `workers.dev` URL as the live demo link. `QLOO_BASE_URL` defaults to `https://hackathon.api.qloo.com` (the legacy `QLOO_API_URL` name is still accepted). The API is same-origin; no broad CORS endpoint is provided. Basic in-memory rate limits and bounded bodies are included; a production launch should use a shared edge limiter. If Qloo returns HTTP 429, the API serves clearly labelled curated fixtures until the limit clears; other upstream failures remain explicit.
 
 Docker alternative:
 

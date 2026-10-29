@@ -1,6 +1,12 @@
 import type { DiscoverInput, Entity, EntityType, TasteProvider } from '../src/types';
 
 type Raw = Record<string, any>;
+export class QlooRateLimitError extends Error {
+  constructor() {
+    super('Qloo is rate limited. Please try again shortly.');
+    this.name = 'QlooRateLimitError';
+  }
+}
 export function normalizeEntity(raw: Raw, fallback?: EntityType): Entity | null {
   const id = raw.entity_id ?? raw.id;
   const rawType = raw.type ?? raw.types?.find((t: string) => t.startsWith('urn:entity:'));
@@ -23,7 +29,8 @@ export class QlooTasteProvider implements TasteProvider {
     Object.entries(params).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
     const res = await this.request(url, { headers: { 'X-Api-Key': this.key, accept: 'application/json' }, signal: AbortSignal.timeout(12000), redirect: 'error' });
     if (res.status === 404 && path === '/search') return { results: [] };
-    if (!res.ok) throw new Error(res.status === 429 ? 'Qloo is rate limited. Please try again shortly.' : `Qloo returned ${res.status}. Check the server API configuration.`);
+    if (res.status === 429) throw new QlooRateLimitError();
+    if (!res.ok) throw new Error(`Qloo returned ${res.status}. Check the server API configuration.`);
     return res.json();
   }
   async search(query: string) {

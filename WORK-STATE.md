@@ -54,3 +54,25 @@ This environment has stale npm-cache/TMPDIR defaults. Installation used `--cache
 - Confirmed the GitHub repository remains public using the GitHub API.
 - The first test invocation hit the already documented invalid environment temporary-directory setting; rerunning with `TMPDIR=/tmp` passed. No source change was needed.
 - Rechecked the organizer's overview and rules: the public-hosting and Qloo-integration requirements remain relevant. The fixture demo is ready for review; credentialed Qloo verification is still pending PW's API access.
+
+## Live Qloo handoff — 2026-10-29
+
+### Completed in this session
+
+- Read the supplied runtime-only Qloo credentials from `/home/schultze/Factory/secrets/qloo.env`; no key was copied into the repository, build output, or commit.
+- Confirmed a live smoke request against `https://hackathon.api.qloo.com`: `/search` and `/v2/insights` both returned HTTP 200 with the expected `results` / `results.entities` shape and entity IDs.
+- Made `QLOO_BASE_URL=https://hackathon.api.qloo.com` the documented/default backend variable; the legacy `QLOO_API_URL` remains accepted for compatibility.
+- Preserved live Qloo whenever a key is present. Added graceful, clearly labelled fixture fallback only for Qloo HTTP 429; authentication, timeout, and schema errors remain explicit.
+- Updated the API contract and handoff documentation. No UI or application scope change was made.
+
+### Required actions for PW (do not skip)
+
+1. Push the local commit to `main` (this session intentionally did not push).
+2. Verify the GitHub Actions Pages workflow completes and the Pages deployment is healthy at `https://schultzenator.github.io/afterglow-qloo/`. The Pages workflow is intentionally key-free; for live recommendations, deploy the Worker/backend with `QLOO_API_KEY` as a server secret and point the public app to that backend, never to the key.
+3. Run one fresh-browser live plan and confirm the badge says **Live Qloo**, result cards say **Qloo result**, and the trace contains successful search/discover calls. If rate limited, confirm the visible warning says curated demo fixtures.
+4. Update Devpost submission `#1268254` with the deployed live URL/status and add: “Live Qloo API is in use; the key is server-side and never shipped to the browser.”
+
+### Validation evidence
+
+- `npm test`: 11 tests expected to pass.
+- `npm run build`: TypeScript check and Vite production build expected to pass.
