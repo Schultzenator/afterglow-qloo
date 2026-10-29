@@ -10,7 +10,8 @@ export class QlooRateLimitError extends Error {
 export function normalizeEntity(raw: Raw, fallback?: EntityType): Entity | null {
   const id = raw.entity_id ?? raw.id;
   const rawType = raw.type ?? raw.types?.find((t: string) => t.startsWith('urn:entity:'));
-  const type = rawType?.replace('urn:entity:', '') ?? fallback;
+  const parsed = rawType?.replace('urn:entity:', '');
+  const type = parsed && ['artist', 'place', 'movie', 'person', 'book'].includes(parsed) ? parsed : fallback;
   if (typeof id !== 'string' || typeof raw.name !== 'string' || !['artist', 'place', 'movie', 'person', 'book'].includes(type)) return null;
   const p = raw.properties ?? {};
   const affinity = raw.query?.affinity ?? raw.query?.affinity_score;
